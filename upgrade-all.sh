@@ -20,6 +20,7 @@ hostname=$(hostname)
 sendEmail="false"
 externalUrl="https://app.mydomain.com"
 fromEmail='My Email<me@email.com'
+fromName="Notification"
 toEmail=me@email.com
 smtp_relay="smtp.local.lan"
 servername="My Pi Hole Server"
@@ -28,7 +29,9 @@ updateTemplate=emails/updatereboot.eml
 norebootTemplate=emails/noreboot.eml
 emailTemp=emails/message.tmp
 
+
 export emlhostname=$hostname
+export emlFromName=$fromName
 export emlexternalUrl=$externalUrl
 export emluptimereq=$rebootUptime
 
