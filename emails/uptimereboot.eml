@@ -1,0 +1,10 @@
+Hi there,
+
+The server $emlhostname has been up for more than $emluptimereq days. 
+A reboot has been initiated
+
+You should check $emlexternalUrl as a health check
+
+
+Regards,
+Elements Automation 
