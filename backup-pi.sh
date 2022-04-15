@@ -28,6 +28,9 @@ servername="My Server Name"
 backupemailTemplate=emails/backup.eml
 emailTemp=emails/backup.tmp
 
+export emlhostname=$hostname
+export emlFromName=$fromName
+
 exec 1>> >(ts '[%Y-%m-%d %H:%M:%S]' >> "$logfile") 2>&1
 
 check_file="$backup_path/check"
