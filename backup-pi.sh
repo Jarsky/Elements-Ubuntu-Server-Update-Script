@@ -47,8 +47,8 @@ fi
 sleep 5
 
 ##BACKUP PATHS##
-tar -zcvf /tmp/"primary-docker-containers-$(date '+%d%m%y').tar.gz" /opt/
-tar -zcvf /tmp/"primary-pi-home-dir-$(date '+%d%m%y').tar.gz" /home/ubuntu/
+tar -zcvf /tmp/"docker-containers-$(date '+%d%m%y').tar.gz" /opt/
+tar -zcvf /tmp/"pi-home-dir-$(date '+%d%m%y').tar.gz" /home/ubuntu/
 ##BACKUP PATHS END##
 
 rsync --remove-source-files -avz --include='*.tar.gz' --exclude='*/' --exclude='*' /tmp/ $backup_path/$hostname/
