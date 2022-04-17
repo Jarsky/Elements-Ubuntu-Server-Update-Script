@@ -7,7 +7,9 @@ Written predominantly to use with my Raspberry Pi's due to being unable to Snaps
 Prerequisites
 ----------
 
-Must have an SMTP relay configured for Email Notifications. 
+1. Must have an SMTP relay configured for Email Notifications. 
+2. Requires `TS` to be installed <code>sudo apt install moreutils</code>
+
 
 
 Usage
