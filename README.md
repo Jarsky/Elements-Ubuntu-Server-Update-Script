@@ -19,12 +19,14 @@ Make sure to give enough time between backup and update
 
 <code>sudo crontab -e</code>
 
+<blockquote>
 #Run Full Backup<br />
-30 2 * * WED /home/ubuntu/scripts/backup-pi.sh
-
+30 2 * * WED /path/to/scripts/backup-pi.sh
+</blockquote>
+<blockquote>
 #Update & Reboot Check<br />
-0 3 * * WED /home/ubuntu/scripts/upgrade-all.sh
-
+0 3 * * WED /path/to/scripts/upgrade-all.sh
+</blockquote>
 
 
 
