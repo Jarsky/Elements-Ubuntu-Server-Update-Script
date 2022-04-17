@@ -11,7 +11,8 @@ Prerequisites
 ----------
 
 1. Must have an SMTP relay configured for Email Notifications. 
-2. Requires `TS` to be installed <code>sudo apt install moreutils</code>
+2. Requires `sendemail` to be installed <code>sudo apt install sendemail</code>
+3. Requires `TS` to be installed <code>sudo apt install moreutils</code>
 
 
 
