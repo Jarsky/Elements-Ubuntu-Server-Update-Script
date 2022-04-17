@@ -4,6 +4,9 @@
 These scripts are to automate the backup and update of a headless Ubuntu Server. <br />
 Written predominantly to use with my Raspberry Pi's due to being unable to Snapshot them. 
 
+The backup script you will need to manually configure the paths you want to backup. 
+The upgrade script supports stopping docker containers (excluding Portainer) before restart. 
+
 Prerequisites
 ----------
 
