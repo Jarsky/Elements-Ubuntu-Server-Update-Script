@@ -37,6 +37,9 @@ check_file="$backup_path/check"
 if [ ! -f "$check_file" ]; then
     umount $backup_path && mount $backup_path && echo "Backup path recreated"
         echo "Check file did not exist. "$check_file" has been remounted"
+        if [ $sendEmail = "true" ]; then
+        sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[CRITICAL] $servername - Check File failed" -m "Check of the backup path failed.\nEnsure that the backup path is properly mounted"
+        fi
 else
         echo "The check file "$check_file" already exists"
 fi
