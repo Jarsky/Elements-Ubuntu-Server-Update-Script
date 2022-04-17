@@ -33,5 +33,11 @@ Make sure to give enough time between backup and update
 0 3 * * WED /path/to/scripts/upgrade-all.sh
 </blockquote>
 
+Important Notes
+------------
 
+The Backup script will check if a file named `check` exists at the mounted backup location. This is to ensure that backups are being saved to a properly mounted volume. As this is primarily for the backup of Raspberry Pi's which are common for SDCards to fail suddenly and completely, we need to ensure these backups are being offloaded to a network share. 
+
+If your backup folder is `/mnt/backup` then the check file should be created at `/mnt/backup/check`.<br>
+If the script cannot find this file, it will attempt to re-mount and will send a notification (if Email is enabled). 
 
