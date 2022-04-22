@@ -79,7 +79,7 @@ if [ $dependencyCheck = "true" ]; then
                         echo ""
                         exit 0
 
-        elif [ $OS = "CentOS" ] && [ yum -q list installed moreutils &>/dev/null && echo "Error" ]; then
+        elif [ $OS = "CentOS" ] && [ yum -q list installed sendemail &>/dev/null && echo "Error" ]; then
                         yum -y install sendemail
                         echo ""
                         echo -e "${GRN}Package has been installed, you can now run ${BASH_SOURCE[0]}${NC}\n"
