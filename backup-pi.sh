@@ -64,14 +64,14 @@ if [ $dependencyCheck = "true" ]; then
         fi
 
         if [ $OS = "Ubuntu" ] && [ $(dpkg-query -W -f='${Status}' sendemail 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-                        apt-get -y install sendemail
+                        apt-get -y install sendemail moreutils
                         echo ""
                         echo -e "${GRN}Package has been installed, you can now run ${BASH_SOURCE[0]}${NC}\n"
                         echo ""
                         exit 0
 
         elif [ $OS = "CentOS" ] && [ yum -q list installed moreutils &>/dev/null && echo "Error" ]; then
-                        yum -y install sendemail
+                        yum -y install sendemail moreutils
                         echo ""
                         echo -e "${GRN}Package has been installed, you can now run ${BASH_SOURCE[0]}${NC}\n"
                         echo ""
