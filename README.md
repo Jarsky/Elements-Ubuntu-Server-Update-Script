@@ -1,4 +1,4 @@
-# Elements-Ubuntu-Server-Update-Script
+# Ubuntu-Server-Update-Script
 
 
 These scripts are to automate the backup and update of a headless Ubuntu Server. <br />
@@ -23,11 +23,11 @@ Make sure to give enough time between backup and update
 
 <blockquote>
 #Run Full Backup<br />
-30 2 * * WED /path/to/scripts/backup-pi.sh
+30 2 * * WED /path/to/scripts/Ubuntu-Server-Update-Script/backup-pi.sh
 </blockquote>
 <blockquote>
 #Update & Reboot Check<br />
-0 3 * * WED /path/to/scripts/upgrade-all.sh
+0 3 * * WED /path/to/scripts/Ubuntu-Server-Update-Script/upgrade-all.sh
 </blockquote>
 
 Important Notes
