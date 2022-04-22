@@ -30,6 +30,7 @@ norebootTemplate=emails/noreboot.eml
 emailTemp=emails/message.tmp
 logfile="/var/log/upgrade.log"
 dependencyCheck=true
+stopDocker=true
 
 export emlhostname=$hostname
 export emlexternalUrl=$externalUrl
@@ -116,41 +117,43 @@ days () { uptime | awk '/days?/ {print $3; next}; {print 0}'; }
 UPTIME_THRESHOLD=$rebootUptime
 if [ $(days) -ge $UPTIME_THRESHOLD ]; then
     echo -e "${RED}Uptime is more than ${UPTIME_THRESHOLD} days, rebooting in 10 seconds...${NC}"
-        docker stop $(docker ps -a | grep -v "portainer" | awk 'NR>1 {print $1}')
+        if [ $stopDocker = "true" ]; then
+                docker stop $(docker ps -a | grep -v "portainer" | awk 'NR>1 {print $1}') fi
         if [ $sendEmail = "true" ]; then
-        rm -rf $emailTemp
-        template=$uptimeTemplate
-        tmpfile=$emailTemp
-        cat $template | envsubst > $tmpfile
+                rm -rf $emailTemp
+                template=$uptimeTemplate
+                tmpfile=$emailTemp
+                cat $template | envsubst > $tmpfile
         sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[WARN] $servername - Reboot" -o message-file=$emailTemp
-        else
-        echo -e "${RED}Email Notification DISABLED${NC}"
+                else
+                echo -e "${RED}Email Notification DISABLED${NC}"
         fi
         sleep 10
         reboot now
 elif [ -f /var/run/reboot-required ]; then
     echo -e "${RED}Reboot required! Stopping services and rebooting in 10 seconds...${NC}"
-        docker stop $(docker ps -a | grep -v "portainer" | awk 'NR>1 {print $1}')
+        if [ $stopDocker = "true" ]; then
+                docker stop $(docker ps -a | grep -v "portainer" | awk 'NR>1 {print $1}') fi
         if [ $sendEmail = "true" ]; then
-        rm -rf $emailTemp
-        template=$updateTemplate
-        tmpfile=$emailTemp
-        cat $template | envsubst > $tmpfile
-        sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[WARN] $servername - Reboot" -o message-file=$emailTemp
+                rm -rf $emailTemp
+                template=$updateTemplate
+                tmpfile=$emailTemp
+                cat $template | envsubst > $tmpfile
+                sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[WARN] $servername - Reboot" -o message-file=$emailTemp
         else
-        echo -d "${RED}Email Notification DISABLED${NC}"
+                echo -d "${RED}Email Notification DISABLED${NC}"
         fi
         sleep 10
         reboot now
 else
     echo -e "${GRN}Update Finished. No Reboot Required.${NC}"
         if [ $sendEmail = "true" ]; then
-        rm -rf $emailTemp
-        template=$norebootTemplate
-        tmpfile=$emailTemp
-        cat $template | envsubst > $tmpfile
-        sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[INFO] $servername - No Reboot" -o message-file=$emailTemp
+                rm -rf $emailTemp
+                template=$norebootTemplate
+                tmpfile=$emailTemp
+                cat $template | envsubst > $tmpfile
+                sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[INFO] $servername - No Reboot" -o message-file=$emailTemp
         else
-        echo "${RED}Email Notification DISABLED${NC}"
+                echo "${RED}Email Notification DISABLED${NC}"
         fi
 fi
