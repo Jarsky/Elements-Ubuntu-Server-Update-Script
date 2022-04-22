@@ -34,6 +34,7 @@ dependencyCheck=true
 export emlhostname=$hostname
 export emlexternalUrl=$externalUrl
 export emluptimereq=$rebootUptime
+export emlFromName=$fromName
 
 #Console Colors
 RED='\e[1;31m'
