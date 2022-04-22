@@ -28,6 +28,7 @@ uptimeTemplate=emails/uptimereboot.eml
 updateTemplate=emails/updatereboot.eml
 norebootTemplate=emails/noreboot.eml
 emailTemp=emails/message.tmp
+logfile="/var/log/upgrade.log"
 dependencyCheck=true
 
 export emlhostname=$hostname
@@ -39,15 +40,19 @@ RED='\e[1;31m'
 YEL='\e[0;33m'
 GRN='\e[0;92m'
 NC='\e[0m'
+OK='\e[0;92m\u2714\e[0m'
+ERR='\e[1;31m\u274c\e[0m'
 
 # Check running as root
 if [[ $EUID -ne 0 ]]; then
-   echo -e "${RED}You need to run this as root. e.g sudo $0${NC}"
+   echo ""
+   echo -e "[${ERR}]You need to run this as root. e.g sudo $0"
+   echo -e "[${OK}]All output will be redirected to $logfile"
+   echo ""
    exit 1
 fi
 
 #Logging
-logfile="/var/log/upgrade.log"
 exec 1>> >(ts '[%Y-%m-%d %H:%M:%S]' >> "$logfile") 2>&1
 
 # Check Dependencies
