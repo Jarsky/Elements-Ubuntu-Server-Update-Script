@@ -28,74 +28,88 @@ uptimeTemplate=emails/uptimereboot.eml
 updateTemplate=emails/updatereboot.eml
 norebootTemplate=emails/noreboot.eml
 emailTemp=emails/message.tmp
-
+dependencyCheck=true
 
 export emlhostname=$hostname
-export emlFromName=$fromName
 export emlexternalUrl=$externalUrl
 export emluptimereq=$rebootUptime
+
+#Console Colors
+RED='\e[1;31m'
+YEL='\e[0;33m'
+GRN='\e[0;92m'
+NC='\e[0m'
+
+# Check running as root
+if [[ $EUID -ne 0 ]]; then
+   echo -e "${RED}You need to run this as root. e.g sudo $0${NC}"
+   exit 1
+fi
 
 #Logging
 logfile="/var/log/upgrade.log"
 exec 1>> >(ts '[%Y-%m-%d %H:%M:%S]' >> "$logfile") 2>&1
 
-#Console Colors
-TEXT_RESET='\e[0m'
-TEXT_YELLOW='\e[0;33m'
-TEXT_GREEN='\e[0;92m'
-TEXT_RED_B='\e[1;31m'
+# Check Dependencies
+if [ $dependencyCheck = "true" ]; then
+        if [ -f /etc/lsb-release ]; then
+            . /etc/lsb-release
+                OS=$DISTRIB_ID
+                VER=$DISTRIB_RELEASE
+        elif [ -f /etc/debian_version ]; then
+                OS=Debian
+                VER=$(cat /etc/debian_version)
+        elif [ -f /etc/redhat-release ]; then
+                OS=CentOS
+                VER=$(rpm -qa \*-release | grep -Ei "oracle|redhat|centos" | cut -d"-" -f3)
+        else
+                OS=$(uname -s)
+                VER=$(uname -r)
+        fi
 
-if [[ $EUID -ne 0 ]]; then
-   echo -e $TEXT_RED_B
-   echo "You need to run this as root. e.g sudo $0"
-   echo -e $TEXT_RESET
-   exit 1
+        if [ $OS = "Ubuntu" ] && [ $(dpkg-query -W -f='${Status}' sendemail 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+                        apt-get -y install sendemail
+                        echo ""
+                        echo -e "${GRN}Package has been installed, you can now run ${BASH_SOURCE[0]}${NC}\n"
+                        echo ""
+                        exit 0
+
+        elif [ $OS = "CentOS" ] && [ yum -q list installed moreutils &>/dev/null && echo "Error" ]; then
+                        yum -y install sendemail
+                        echo ""
+                        echo -e "${GRN}Package has been installed, you can now run ${BASH_SOURCE[0]}${NC}\n"
+                        echo ""
+                        exit 0
+        fi
 fi
 
-echo -e $TEXT_GREEN
 echo ' '
-echo 'Starting OS Updates...'
+echo -e "${GRN}Starting OS Updates...${NC}"
 echo ' '
-echo -e $TEXT_RESET
 sleep 5
 sudo apt update -y
-echo -e $TEXT_YELLOW
-echo 'Repository update finished...'
-echo -e $TEXT_RESET
+echo -e "${YEL}Repository update finished...${NC}"
 sleep 2
-echo -e $TEXT_YELLOW
-echo 'Starting Distribution & Package Updates...'
-echo -e $TEXT_RESET
+echo -e "${YEL}Starting Distribution & Package Updates...${NC}"
 sleep 1
 sudo apt dist-upgrade -y
-echo -e $TEXT_YELLOW
-echo 'Distribution upgrade finished...'
-echo -e $TEXT_RESET
+echo -e "${YEL}Distribution upgrade finished...${NC}"
 sleep 1
 sudo apt upgrade -y
-echo -e $TEXT_YELLOW
-echo 'Packages upgrade finished...'
-echo -e $TEXT_RESET
+echo -e "${YEL}Packages upgrade finished...${NC}"
 sleep 1
 sudo apt-get autoremove -y
-echo -e $TEXT_YELLOW
-echo 'Redundant packages removed...'
-echo -e $TEXT_RESET
+echo -e "${YEL}Redundant packages removed...${NC}"
 sleep 1
 sudo apt-get autoclean -y
-echo -e $TEXT_YELLOW
-echo 'Local repository cleaned...'
-echo -e $TEXT_RESET
+echo -e "${YEL}Local repository cleaned...${NC}"
 sleep 1
-echo -e $TEXT_GREEN
-echo 'Testing for Reboot...'
-echo -e $TEXT_RESET
+echo -e "${GRN}Testing for Reboot...${NC}"
+
 days () { uptime | awk '/days?/ {print $3; next}; {print 0}'; }
 UPTIME_THRESHOLD=$rebootUptime
 if [ $(days) -ge $UPTIME_THRESHOLD ]; then
-    echo -e $TEXT_RED_B
-    echo "Uptime is more than ${UPTIME_THRESHOLD} days, rebooting in 10 seconds..."
-    echo -e $TEXT_RESET
+    echo -e "${RED}Uptime is more than ${UPTIME_THRESHOLD} days, rebooting in 10 seconds...${NC}"
         docker stop $(docker ps -a | grep -v "portainer" | awk 'NR>1 {print $1}')
         if [ $sendEmail = "true" ]; then
         rm -rf $emailTemp
@@ -104,16 +118,12 @@ if [ $(days) -ge $UPTIME_THRESHOLD ]; then
         cat $template | envsubst > $tmpfile
         sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[WARN] $servername - Reboot" -o message-file=$emailTemp
         else
-        echo -e $TEXT_RED_B
-        echo 'Email Notification DISABLED'
-        echo -e $TEXT_RESET
+        echo -e "${RED}Email Notification DISABLED${NC}"
         fi
         sleep 10
-        sudo reboot now
+        reboot now
 elif [ -f /var/run/reboot-required ]; then
-    echo -e $TEXT_RED_B
-    echo 'Reboot required! Stopping services and rebooting in 10 seconds...'
-    echo -e $TEXT_RESET
+    echo -e "${RED}Reboot required! Stopping services and rebooting in 10 seconds...${NC}"
         docker stop $(docker ps -a | grep -v "portainer" | awk 'NR>1 {print $1}')
         if [ $sendEmail = "true" ]; then
         rm -rf $emailTemp
@@ -122,16 +132,12 @@ elif [ -f /var/run/reboot-required ]; then
         cat $template | envsubst > $tmpfile
         sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[WARN] $servername - Reboot" -o message-file=$emailTemp
         else
-        echo -e $TEXT_RED_B
-        echo 'Email Notification DISABLED'
-        echo -e $TEXT_RESET
+        echo -d "${RED}Email Notification DISABLED${NC}"
         fi
         sleep 10
-        sudo reboot now
+        reboot now
 else
-    echo -e $TEXT_GREEN
-    echo 'Update Finished. No Reboot Required.'
-    echo -e $TEXT_RESET
+    echo -e "${GRN}Update Finished. No Reboot Required.${NC}"
         if [ $sendEmail = "true" ]; then
         rm -rf $emailTemp
         template=$norebootTemplate
@@ -139,8 +145,6 @@ else
         cat $template | envsubst > $tmpfile
         sendemail -f "$fromEmail" -t $toEmail -s $smtp_relay -u "[INFO] $servername - No Reboot" -o message-file=$emailTemp
         else
-        echo -e $TEXT_RED_B
-        echo 'Email Notification DISABLED'
-        echo -e $TEXT_RESET
+        echo "${RED}Email Notification DISABLED${NC}"
         fi
 fi
