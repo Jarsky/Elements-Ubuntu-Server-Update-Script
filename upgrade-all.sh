@@ -3,7 +3,7 @@
 #                                                       #
 #          Elements Linux Server Auto Updater           #
 #                                                       #
-#        Written by Jarsky ||  Updated 13/04/2022       #
+#        Written by Jarsky ||  Updated 23/04/2022       #
 #                                                       #
 #########################################################
 #
